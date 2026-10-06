@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise e Resultados</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7f5;
+  color:#17231d;
+}
+header{
+  background:#08783f;
+  color:white;
+  padding:24px 20px 28px;
+  border-radius:0 0 24px 24px;
+}
+.logo{
+  font-size:26px;
+  font-weight:800;
+}
+.subtitle{
+  margin-top:7px;
+  opacity:.9;
+  font-size:14px;
+}
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:18px;
+}
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.07);
+}
+.card h2{
+  margin:0 0 12px;
+  font-size:19px;
+}
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding-bottom:4px;
+}
+.tab{
+  border:0;
+  background:#e7eee9;
+  padding:11px 15px;
+  border-radius:12px;
+  white-space:nowrap;
+  font-weight:bold;
+}
+.tab.active{
+  background:#08783f;
+  color:white;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.stat{
+  background:#f0f6f2;
+  border-radius:14px;
+  padding:13px 8px;
+  text-align:center;
+}
+.stat strong{
+  display:block;
+  font-size:20px;
+  color:#08783f;
+}
+.stat span{
+  font-size:11px;
+}
+.result{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px 0;
+  border-bottom:1px solid #edf0ee;
+}
+.result:last-child{border-bottom:0}
+.number{
+  font-size:22px;
+  font-weight:800;
+}
+.badge{
+  background:#e5f4eb;
+  color:#08783f;
+  padding:6px 9px;
+  border-radius:9px;
+  font-size:12px;
+  font-weight:bold;
+}
+button.main{
+  width:100%;
+  border:0;
+  background:#08783f;
+  color:white;
+  padding:15px;
+  border-radius:13px;
+  font-size:16px;
+  font-weight:bold;
+}
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid #d5ddd8;
+  border-radius:12px;
+  margin:7px 0 12px;
+  font-size:15px;
+}
+.small{
+  color:#68736c;
+  font-size:12px;
+  line-height:1.5;
+}
+footer{
+  text-align:center;
+  color:#7a837d;
+  font-size:11px;
+  padding:10px 0 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">📊 Análise & Resultados</div>
+  <div class="subtitle">Histórico, estatísticas e análise dos resultados</div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Horários</h2>
+
+    <div class="tabs">
+      <button class="tab active" onclick="selecionarHorario(this,'11:00')">11:00</button>
+      <button class="tab" onclick="selecionarHorario(this,'14:00')">14:00</button>
+      <button class="tab" onclick="selecionarHorario(this,'16:00')">16:00</button>
+      <button class="tab" onclick="selecionarHorario(this,'18:00')">18:00</button>
+      <button class="tab" onclick="selecionarHorario(this,'21:00')">21:00</button>
+      <button class="tab" onclick="selecionarHorario(this,'22:00')">22:00</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Análise — <span id="horario">11:00</span></h2>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="total">30</strong>
+        <span>Resultados</span>
+      </div>
+
+      <div class="stat">
+        <strong id="frequente">--</strong>
+        <span>Mais frequente</span>
+      </div>
+
+      <div class="stat">
+        <strong id="recente">--</strong>
+        <span>Último</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Motor de análise</h2>
+
+    <p class="small">
+      A análise utiliza o histórico informado para identificar
+      frequências e padrões estatísticos. Estatísticas históricas
+      não garantem resultados futuros.
+    </p>
+
+    <button class="main" onclick="executarAnalise()">
+      🔎 Executar análise
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Últimos resultados</h2>
+
+    <div id="resultados"></div>
+  </div>
+
+  <div class="card">
+    <h2>Histórico dos últimos 30 dias</h2>
+
+    <p class="small">
+      Área preparada para receber os resultados históricos.
+      Nesta primeira versão, os dados abaixo são demonstrativos.
+    </p>
+
+    <input id="entrada" placeholder="Ex.: 12, 25, 08, 31, 44">
+
+    <button class="main" onclick="adicionarResultados()">
+      + Adicionar resultados
+    </button>
+  </div>
+
+  <footer>
+    Versão inicial • Análise estatística de histórico
+  </footer>
+
+</div>
+
+<script>
+
+let horarioAtual = "11:00";
+
+let dados = {
+  "11:00":[12,25,8,31,44,12,18,25,7,31],
+  "14:00":[5,22,14,36,22,9,18,5],
+  "16:00":[11,27,33,19,27,4,16],
+  "18:00":[8,13,29,8,21,35],
+  "21:00":[17,24,10,32,17,6],
+  "22:00":[9,28,15,9,34,20]
+};
+
+function selecionarHorario(botao, horario){
+
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  botao.classList.add("active");
+
+  horarioAtual = horario;
+  document.getElementById("horario").textContent = horario;
+
+  atualizarTela();
+}
+
+function atualizarTela(){
+
+  const lista = dados[horarioAtual] || [];
+
+  document.getElementById("total").textContent = lista.length;
+
+  if(lista.length === 0){
+    document.getElementById("frequente").textContent = "--";
+    document.getElementById("recente").textContent = "--";
+    document.getElementById("resultados").innerHTML =
+      "<p class='small'>Nenhum resultado cadastrado.</p>";
+    return;
+  }
+
+  let contagem = {};
+
+  lista.forEach(n=>{
+    contagem[n] = (contagem[n] || 0) + 1;
+  });
+
+  let maisFrequente = Object.keys(contagem).sort(
+    (a,b)=>contagem[b]-contagem[a]
+  )[0];
+
+  document.getElementById("frequente").textContent =
+    maisFrequente;
+
+  document.getElementById("recente").textContent =
+    String(lista[lista.length-1]).padStart(2,"0");
+
+  document.getElementById("resultados").innerHTML =
+    lista.slice(-8).reverse().map((n,i)=>`
+      <div class="result">
+        <div>
+          <div class="number">${String(n).padStart(2,"0")}</div>
+          <div class="small">Resultado ${i+1}</div>
+        </div>
+        <div class="badge">Histórico</div>
+      </div>
+    `).join("");
+}
+
+function executarAnalise(){
+  atualizarTela();
+
+  alert(
+    "Análise concluída para o horário " +
+    horarioAtual +
+    ". Os dados apresentados são estatísticos e históricos."
+  );
+}
+
+function adicionarResultados(){
+
+  const entrada = document.getElementById("entrada").value;
+
+  const novos = entrada
+    .split(",")
+    .map(x=>parseInt(x.trim()))
+    .filter(x=>!isNaN(x));
+
+  if(novos.length === 0){
+    alert("Digite os resultados separados por vírgula.");
+    return;
+  }
+
+  dados[horarioAtual] =
+    (dados[horarioAtual] || []).concat(novos);
+
+  document.getElementById("entrada").value = "";
+
+  atualizarTela();
+
+  alert(novos.length + " resultado(s) adicionado(s).");
+}
+
+atualizarTela();
+
+</script>
+
+</body>
+</html>
